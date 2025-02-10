@@ -529,6 +529,10 @@ pub enum WindowEvent {
     WindowBackendScaleFactorChanged(WindowBackendScaleFactorChanged),
     WindowCloseRequested(WindowCloseRequested),
     WindowCreated(WindowCreated),
+    WindowForeground(WindowForeground),
+    WindowActivate(WindowActivate),
+    WindowDeactivate(WindowDeactivate),
+    WindowBackground(WindowBackground),
     WindowDestroyed(WindowDestroyed),
     WindowFocused(WindowFocused),
     WindowMoved(WindowMoved),
@@ -600,6 +604,26 @@ impl From<WindowCloseRequested> for WindowEvent {
 impl From<WindowCreated> for WindowEvent {
     fn from(e: WindowCreated) -> Self {
         Self::WindowCreated(e)
+    }
+}
+impl From<WindowForeground> for WindowEvent {
+    fn from(e: WindowForeground) -> Self {
+        Self::WindowForeground(e)
+    }
+}
+impl From<WindowActivate> for WindowEvent {
+    fn from(e: WindowActivate) -> Self {
+        Self::WindowActivate(e)
+    }
+}
+impl From<WindowDeactivate> for WindowEvent {
+    fn from(e: WindowDeactivate) -> Self {
+        Self::WindowDeactivate(e)
+    }
+}
+impl From<WindowBackground> for WindowEvent {
+    fn from(e: WindowBackground) -> Self {
+        Self::WindowBackground(e)
     }
 }
 impl From<WindowDestroyed> for WindowEvent {

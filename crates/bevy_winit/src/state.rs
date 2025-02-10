@@ -803,6 +803,7 @@ impl<T: Event> WinitAppRunnerState<T> {
                 BevyWindowEvent::KeyboardFocusLost(e) => {
                     world.send_event(e);
                 }
+                _ => unreachable!(),
             }
         }
 
