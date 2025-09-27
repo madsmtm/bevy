@@ -77,6 +77,74 @@ pub struct WindowCreated {
     pub window: Entity,
 }
 
+/// TODO.
+#[derive(Message, Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(Reflect),
+    reflect(Debug, PartialEq, Clone)
+)]
+#[cfg_attr(feature = "serialize", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+    all(feature = "serialize", feature = "bevy_reflect"),
+    reflect(Serialize, Deserialize)
+)]
+pub struct WindowForeground {
+    /// Window that was put in the foreground.
+    pub window: Entity,
+}
+
+/// TODO.
+#[derive(Message, Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(Reflect),
+    reflect(Debug, PartialEq, Clone)
+)]
+#[cfg_attr(feature = "serialize", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+    all(feature = "serialize", feature = "bevy_reflect"),
+    reflect(Serialize, Deserialize)
+)]
+pub struct WindowActivate {
+    /// Window that was activated.
+    pub window: Entity,
+}
+
+/// TODO.
+#[derive(Message, Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(Reflect),
+    reflect(Debug, PartialEq, Clone)
+)]
+#[cfg_attr(feature = "serialize", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+    all(feature = "serialize", feature = "bevy_reflect"),
+    reflect(Serialize, Deserialize)
+)]
+pub struct WindowDeactivate {
+    /// Window that was deactivated.
+    pub window: Entity,
+}
+
+/// TODO.
+#[derive(Message, Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(Reflect),
+    reflect(Debug, PartialEq, Clone)
+)]
+#[cfg_attr(feature = "serialize", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+    all(feature = "serialize", feature = "bevy_reflect"),
+    reflect(Serialize, Deserialize)
+)]
+pub struct WindowBackground {
+    /// Window that was moved to the background.
+    pub window: Entity,
+}
+
 /// An event that is sent whenever the operating systems requests that a window
 /// be closed. This will be sent when the close button of the window is pressed.
 ///
@@ -444,6 +512,56 @@ pub struct WindowThemeChanged {
     pub theme: WindowTheme,
 }
 
+/// The lifecycle state for a window (/`UIWindowScene`).
+///
+/// Similar to `UISceneActivationState` and `Lifecycle.State` on Android.
+#[derive(Default)]
+pub enum WindowState {
+    /// Might make more sense to model this as the window entity being added/removed?
+    ///
+    /// Depends on whether we can prevent `OnEnter` from running on the initial state?
+    /// Also depends on whether we can (and should) make it clear when transitioning directly to the background state.
+    ///
+    /// Possible transitions: (`onCreate` on Android, that is passed state from `onSaveInstanceState`)
+    /// -> Foreground / Active (on launch)
+    /// -> Background (only when requested to be launched in background in `Info.plist`?)
+    #[default]
+    Unattached, // Or maybe `Initialized`. Lifecycle.State.DESTROYED on Android
+
+    /// TODO.
+    ///
+    /// The process may be killed by the system at any time to reclaim resources.
+    ///
+    /// You should save all application state before entering this.
+    ///
+    /// May receive request to render when "Background Modes" are enabled on iOS:
+    /// https://developer.apple.com/documentation/uikit/about-the-background-execution-sequence?language=objc
+    ///
+    /// Possible transitions:
+    /// <- Unattached (`onDestroy` on Android)
+    /// -> Foreground (`onStart` / `onRestart` on Android)
+    Background, // Lifecycle.State.CREATED on Android
+
+    /// The window _may_ be visible, and thus the UI still exists, but it is unlikely to be the user's main focus.
+    ///
+    /// You may want to pause music and gameplay, but you should continue rendering animations etc.
+    /// - Might not be possible to render though, see:
+    /// https://developer.apple.com/documentation/Metal/preparing-your-metal-app-to-run-in-the-background?language=objc
+    ///
+    /// Possible transitions:
+    /// <- Background (`onStop` on Android)
+    /// -> Active (`onResume` on Android)
+    Foreground, // Lifecycle.State.STARTED on Android. Maybe name `Visible`?
+
+    /// The window is visible and directly in use.
+    ///
+    /// There can be multiple windows in this state, it does not signify e.g. keyboard focus.
+    ///
+    /// Possible transitions:
+    /// <- Foreground (`onPause` on Android)
+    Active, // Lifecycle.State.RESUMED on Android. Maybe name just `Active` or `Foreground`?
+}
+
 /// Application lifetime events
 #[derive(Message, Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(
@@ -520,6 +638,14 @@ pub enum WindowEvent {
     WindowCloseRequested(WindowCloseRequested),
     /// A new window has been created.
     WindowCreated(WindowCreated),
+    /// TODO.
+    WindowForeground(WindowForeground),
+    /// TODO.
+    WindowActivate(WindowActivate),
+    /// TODO.
+    WindowDeactivate(WindowDeactivate),
+    /// TODO.
+    WindowBackground(WindowBackground),
     /// A window has been destroyed by the underlying windowing system.
     WindowDestroyed(WindowDestroyed),
     /// A window has received or lost focus.
@@ -619,6 +745,30 @@ impl From<WindowCloseRequested> for WindowEvent {
 impl From<WindowCreated> for WindowEvent {
     fn from(e: WindowCreated) -> Self {
         Self::WindowCreated(e)
+    }
+}
+
+impl From<WindowForeground> for WindowEvent {
+    fn from(e: WindowForeground) -> Self {
+        Self::WindowForeground(e)
+    }
+}
+
+impl From<WindowActivate> for WindowEvent {
+    fn from(e: WindowActivate) -> Self {
+        Self::WindowActivate(e)
+    }
+}
+
+impl From<WindowDeactivate> for WindowEvent {
+    fn from(e: WindowDeactivate) -> Self {
+        Self::WindowDeactivate(e)
+    }
+}
+
+impl From<WindowBackground> for WindowEvent {
+    fn from(e: WindowBackground) -> Self {
+        Self::WindowBackground(e)
     }
 }
 

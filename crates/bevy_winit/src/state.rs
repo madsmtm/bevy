@@ -865,6 +865,7 @@ impl WinitAppRunnerState {
                 BevyWindowEvent::KeyboardFocusLost(e) => {
                     world.write_message(e);
                 }
+                _ => unreachable!(),
             }
         }
 
